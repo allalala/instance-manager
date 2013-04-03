@@ -3,13 +3,15 @@ from django.contrib import admin
 from django.utils.text import slugify
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils.safestring import mark_safe
+
 import os, subprocess
 
 # This needs to be configured for your server!!!
 WEBAPP_DIR = '/Users/ryan/homebrew/Cellar/tomcat/7.0.39/libexec/webapps'
 
 # Don't change this one
-GEOSERVER_WAR_PATH = os.path.join(os.path.dirname(__file__), "geoserver", "geoserver-2.3.0-war", "geoserver.war")
+GEOSERVER_WAR_PATH = os.path.join(os.path.dirname(__file__), "geoserver.war")
  
 class GeoserverInstance(models.Model):
     name = models.CharField(max_length=50)
