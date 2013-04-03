@@ -14,6 +14,9 @@ WEBAPP_DIR = '/Users/ryan/homebrew/Cellar/tomcat/7.0.39/libexec/webapps'
 GEOSERVER_WAR_PATH = os.path.join(os.path.dirname(__file__), "geoserver", "geoserver.war")
  
 class GeoserverInstance(models.Model):
+    class Meta:
+        ordering = [ "name" ]
+        
     name = models.CharField(max_length=50)
     
     def __unicode__(self):
