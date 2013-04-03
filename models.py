@@ -10,7 +10,7 @@ import os, subprocess
 # This needs to be configured for your server!!!
 WEBAPP_DIR = '/Users/ryan/homebrew/Cellar/tomcat/7.0.39/libexec/webapps'
 
-# Don't change this one
+# Don't change this one though
 GEOSERVER_WAR_PATH = os.path.join(os.path.dirname(__file__), "geoserver", "geoserver.war")
  
 class GeoserverInstance(models.Model):
@@ -48,7 +48,7 @@ class GeoserverInstance(models.Model):
         return subprocess.call(params)
     
 @receiver(post_save, sender=GeoserverInstance)
-def instace_instantiator(sender, instance, created, **kwargs):
+def instance_instantiator(sender, instance, created, **kwargs):
     if created:
         instance.copy_war()
         
