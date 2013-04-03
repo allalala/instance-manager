@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>AZGS Geoservers</title>
+    </head>
+    <body>
+        <h2>AZGS Runs Geoserver!</h2>
+        <ul>
+            {% for instance in instances %}
+            <li>
+                {{ instance.instance_admin }}
+            </li>
+            {% endfor %}
+        </ul>
+    </body>
+</html>
