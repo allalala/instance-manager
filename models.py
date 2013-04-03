@@ -11,7 +11,7 @@ import os, subprocess
 WEBAPP_DIR = '/Users/ryan/homebrew/Cellar/tomcat/7.0.39/libexec/webapps'
 
 # Don't change this one
-GEOSERVER_WAR_PATH = os.path.join(os.path.dirname(__file__), "geoserver.war")
+GEOSERVER_WAR_PATH = os.path.join(os.path.dirname(__file__), "geoserver", "geoserver.war")
  
 class GeoserverInstance(models.Model):
     name = models.CharField(max_length=50)
