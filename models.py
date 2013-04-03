@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib import admin
 from django.utils.text import slugify
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.utils.safestring import mark_safe
 
@@ -31,16 +31,31 @@ class GeoserverInstance(models.Model):
     def instance_admin(self):
         return mark_safe("<a href='%s'>%s</a>" % (self.instance_admin_url(), self.instance_admin_url()))
     
+    def pretty_instance_url(self):
+        return mark_safe("<a href='%s'>%s</a>" % (self.instance_admin_url(), self.__unicode__()))
+    
+    def war_destination(self):
+        return os.path.join(WEBAPP_DIR, self.war_name())
+    
     def copy_war(self):
         """Copy a war file to the WEBAPP_DIR"""
-        params = [ "cp", GEOSERVER_WAR_PATH, os.path.join(WEBAPP_DIR, self.war_name()) ]
+        params = [ "cp", GEOSERVER_WAR_PATH, self.war_destination() ]
         return subprocess.call(params)
-
+    
+    def delete_war(self):
+        """Remove a war file from the WEBAPP_DIR"""
+        params = [ "rm", self.war_destination() ]
+        return subprocess.call(params)
+    
 @receiver(post_save, sender=GeoserverInstance)
 def instace_instantiator(sender, instance, created, **kwargs):
     if created:
         instance.copy_war()
-              
+        
+@receiver(post_delete, sender=GeoserverInstance)
+def instance_deinstantiator(sender, instance, **kwargs):
+    instance.delete_war()
+    
 class GeoserverInstanceAdmin(admin.ModelAdmin):
     list_display = [ '__unicode__', 'instance_admin' ]
 
