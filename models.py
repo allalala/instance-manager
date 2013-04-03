@@ -26,7 +26,7 @@ class GeoserverInstance(models.Model):
         return "http://geoserver.azgs.az.gov/%s/web/" % self.__unicode__()
     
     def instance_admin(self):
-        return "<a href='%s'>%s</a>" % (self.instance_admin_url(), self.instance_admin_url())
+        return mark_safe("<a href='%s'>%s</a>" % (self.instance_admin_url(), self.instance_admin_url()))
     
     def copy_war(self):
         """Copy a war file to the WEBAPP_DIR"""
