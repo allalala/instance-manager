@@ -7,12 +7,19 @@ from django.utils.safestring import mark_safe
 
 import os, subprocess
 
-# This needs to be configured for your server!!!
+# This stuff needs to be configured for your server!!!
 WEBAPP_DIR = '/Users/ryan/homebrew/Cellar/tomcat/7.0.39/libexec/webapps'
+TOMCAT_MANAGER_PATH = 'localhost:8080/manager/text'
+TOMCAT_MANAGER = "tomcat" # must have role "manager-text"
+TOMCAT_MANAGER_PASSWORD = "secret"
 
 # Don't change this one though
 GEOSERVER_WAR_PATH = os.path.join(os.path.dirname(__file__), "geoserver", "geoserver.war")
- 
+
+# ...or these
+TOMCAT_DEPLOY_URL = "http://%s:%s@%s/deploy" % (TOMCAT_MANAGER, TOMCAT_MANAGER_PASSWORD, TOMCAT_MANAGER_PATH)
+TOMCAT_UNDEPLOY_URL = "http://%s:%s@%s/undeploy" % (TOMCAT_MANAGER, TOMCAT_MANAGER_PASSWORD, TOMCAT_MANAGER_PATH)
+
 class GeoserverInstance(models.Model):
     class Meta:
         ordering = [ "name" ]
@@ -47,14 +54,32 @@ class GeoserverInstance(models.Model):
         params = [ "rm", self.war_destination() ]
         return subprocess.call(params)
     
+    def deploy_war(self):
+        """POST a war file to Tomcat"""
+        params = [
+            "curl",
+            "--upload-file",
+            GEOSERVER_WAR_PATH,
+            "%s?path=/%s&update=true" % (TOMCAT_DEPLOY_URL, self.__unicode__()) 
+        ]
+        return subprocess.call(params)
+    
+    def undeploy_war(self):
+        """Undeploy a WAR file from Tomcat"""
+        params = [
+            "curl",
+            "%s?path=/%s" %(TOMCAT_UNDEPLOY_URL, self.__unicode__())
+        ]
+        return subprocess.call(params)
+    
 @receiver(post_save, sender=GeoserverInstance)
 def instance_instantiator(sender, instance, created, **kwargs):
     if created:
-        instance.copy_war()
+        out = instance.deploy_war()
         
 @receiver(post_delete, sender=GeoserverInstance)
 def instance_deinstantiator(sender, instance, **kwargs):
-    instance.delete_war()
+    out = instance.undeploy_war()
     
 class GeoserverInstanceAdmin(admin.ModelAdmin):
     list_display = [ '__unicode__', 'instance_admin' ]
