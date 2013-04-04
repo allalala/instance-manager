@@ -12,6 +12,7 @@ WEBAPP_DIR = '/Users/ryan/homebrew/Cellar/tomcat/7.0.39/libexec/webapps'
 TOMCAT_MANAGER_PATH = 'localhost:8080/manager/text'
 TOMCAT_MANAGER = "tomcat" # must have role "manager-text"
 TOMCAT_MANAGER_PASSWORD = "secret"
+DOMAIN = "data.usgin.org"
 
 # Don't change this one though
 GEOSERVER_WAR_PATH = os.path.join(os.path.dirname(__file__), "geoserver", "geoserver.war")
@@ -33,7 +34,7 @@ class GeoserverInstance(models.Model):
         return "%s.war" % self.__unicode__()
     
     def instance_admin_url(self):
-        return "http://geoserver.azgs.az.gov/%s/web/" % self.__unicode__()
+        return "http://%s/%s/web/" % (DOMAIN, self.__unicode__())
     
     def instance_admin(self):
         return mark_safe("<a href='%s'>%s</a>" % (self.instance_admin_url(), self.instance_admin_url()))
